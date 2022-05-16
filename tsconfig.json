@@ -16,6 +16,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": false,
     "inlineSourceMap": true,
+    "useUnknownInCatchVariables": true,
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
