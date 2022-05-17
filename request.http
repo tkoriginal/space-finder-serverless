@@ -27,3 +27,6 @@ Content-Type: application/json
   "name": "So-So"
 }
 ###
+
+DELETE  {{endpoint}}/spaces?spaceId=057d5b72-a263-4f67-921d-5028af49c036
+###

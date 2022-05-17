@@ -27,6 +27,11 @@ const lambdaPaths: LambdaPath[] = [
     path: 'Update',
     access: [Access.WRITE],
     method: Method.PUT
+  },
+  {
+    path: 'Delete',
+    access: [Access.WRITE],
+    method: Method.DELETE
   }
 ]
 

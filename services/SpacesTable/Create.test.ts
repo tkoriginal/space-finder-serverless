@@ -6,4 +6,4 @@ const event = {
     world: 'Hello'
   }
 }
-console.log(handler(event as any, {} as any))
+handler(event as any, {} as any).then(response => console.log(response))
