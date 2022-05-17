@@ -22,6 +22,11 @@ const lambdaPaths: LambdaPath[] = [
     path: 'Read',
     access: [Access.READ],
     method: Method.GET
+  },
+  {
+    path: 'Update',
+    access: [Access.WRITE],
+    method: Method.PUT
   }
 ]
 

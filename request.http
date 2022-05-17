@@ -17,3 +17,13 @@ GET {{endpoint}}/spaces?spaceId=057d5b72-a263-4f67-921d-5028af49c036
 
 GET {{endpoint}}/spaces?location=Toronto
 ###
+
+
+PUT {{endpoint}}/spaces?spaceId=057d5b72-a263-4f67-921d-5028af49c036
+Content-Type: application/json
+
+{
+  "location": "Torono",
+  "name": "So-So"
+}
+###

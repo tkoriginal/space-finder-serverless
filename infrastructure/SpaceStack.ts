@@ -8,12 +8,6 @@ import { GenericTable } from "./GenericTable";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import lambdaPaths from "./LambdaPaths";
 
-enum Method {
-  POST = 'POST',
-  GET = 'GET',
-  PUT = 'PUT',
-  DELETE = 'DELETE'
-}
 export class SpaceStack extends Stack {
   private api = new RestApi(this, "SpaceApi");
 
