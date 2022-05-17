@@ -6,14 +6,21 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 import { GenericTable } from "./GenericTable";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import lambdaPaths from "./LambdaPaths";
+
+enum Method {
+  POST = 'POST',
+  GET = 'GET',
+  PUT = 'PUT',
+  DELETE = 'DELETE'
+}
 export class SpaceStack extends Stack {
   private api = new RestApi(this, "SpaceApi");
 
   private spaceTable = new GenericTable(this, {
     tableName: 'SpacesTable',
     primaryKey: 'spaceId',
-    createLambdaPath: 'Create',
-    readLambdaPath: 'Read',
+    lambdaPaths: lambdaPaths,
     secondaryIndexes: ['location']
   });
 
@@ -37,7 +44,8 @@ export class SpaceStack extends Stack {
 
     // Space API integration:
     const spaceResources = this.api.root.addResource('spaces');
-    spaceResources.addMethod('POST', this.spaceTable.createLambdaIntegration)
-    spaceResources.addMethod('GET', this.spaceTable.readLambdaIntegration)
+    for (let lambdaPath of lambdaPaths) {
+        spaceResources.addMethod(lambdaPath.method, this.spaceTable.lambdaOperations[lambdaPath.path].lambdaIntegration)
+      }
   }
 }

@@ -1,12 +1,19 @@
+import { LambdaPath } from './LambdaPaths';
 import { LambdaIntegration } from "aws-cdk-lib/aws-apigateway";
 import { Stack } from "aws-cdk-lib";
 import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { join } from "path";
 
+export enum Access {
+  READ,
+  WRITE,
+}
+
 export interface TableProps {
   tableName: string;
   primaryKey: string;
+  lambdaPaths: LambdaPath[];
   createLambdaPath?: string;
   readLambdaPath?: string;
   updateLambdaPath?: string;
@@ -18,25 +25,17 @@ export class GenericTable {
   private stack: Stack;
   private table: Table;
   private props: TableProps;
-  private lambdaOperations: {
+  public lambdaOperations: {
     [key: string]: {
-      lambdaFunction: NodejsFunction | undefined;
-      LambdaIntegration: LambdaIntegration;
+      lambdaFunction: NodejsFunction;
+      lambdaIntegration: LambdaIntegration;
     };
-  }[];
-  private createLambda: NodejsFunction | undefined;
-  private readLambda: NodejsFunction | undefined;
-  private updateLambda: NodejsFunction | undefined;
-  private deleteLambda: NodejsFunction | undefined;
-
-  public createLambdaIntegration: LambdaIntegration;
-  public readLambdaIntegration: LambdaIntegration;
-  public updateLambdaIntegration: LambdaIntegration;
-  public deleteLambdaIntegration: LambdaIntegration;
+  };
 
   public constructor(stack: Stack, props: TableProps) {
     this.stack = stack;
     this.props = props;
+    this.lambdaOperations = {}
     this.initialize();
   }
 
@@ -72,26 +71,16 @@ export class GenericTable {
   }
 
   private createLambdas() {
-    this.lambdaOperations.map(lambdaOperation => {
-
-    })
-    if (this.props.createLambdaPath) {
-      this.createLambda = this.createSingleLambda(this.props.createLambdaPath);
-      this.createLambdaIntegration = new LambdaIntegration(this.createLambda);
-    }
-    if (this.props.readLambdaPath) {
-      this.readLambda = this.createSingleLambda(this.props.readLambdaPath);
-      this.readLambdaIntegration = new LambdaIntegration(this.readLambda);
-    }
-    if (this.props.updateLambdaPath) {
-      this.updateLambda = this.createSingleLambda(this.props.updateLambdaPath);
-      this.updateLambdaIntegration = new LambdaIntegration(this.updateLambda);
-    }
-    if (this.props.deleteLambdaPath) {
-      this.deleteLambda = this.createSingleLambda(this.props.deleteLambdaPath);
-      this.deleteLambdaIntegration = new LambdaIntegration(this.deleteLambda);
+    for (let lambdaPath of this.props.lambdaPaths) {
+      const lambdaFunction = this.createSingleLambda(lambdaPath.path);
+      const lambdaIntegration = new LambdaIntegration(lambdaFunction);
+      this.lambdaOperations[lambdaPath.path] = {
+        lambdaFunction,
+        lambdaIntegration,
+      };
     }
   }
+
   private createSingleLambda(lambdaName: string): NodejsFunction {
     const lambdaId = this.props.tableName + "-" + lambdaName;
     return new NodejsFunction(this.stack, lambdaId, {
@@ -111,17 +100,19 @@ export class GenericTable {
     });
   }
   private grantTableRights() {
-    if (this.createLambda) {
-      this.table.grantWriteData(this.createLambda);
-    }
-    if (this.readLambda) {
-      this.table.grantReadData(this.readLambda);
-    }
-    if (this.updateLambda) {
-      this.table.grantWriteData(this.updateLambda);
-    }
-    if (this.deleteLambda) {
-      this.table.grantWriteData(this.deleteLambda);
+    for (let lambdaPath of this.props.lambdaPaths) {
+      for (let access of lambdaPath.access) {
+        if (access === Access.READ) {
+          this.table.grantReadData(
+            this.lambdaOperations[lambdaPath.path].lambdaFunction
+          );
+        }
+        if (access === Access.WRITE) {
+          this.table.grantWriteData(
+            this.lambdaOperations[lambdaPath.path].lambdaFunction
+          );
+        }
+      }
     }
   }
 }
