@@ -3,8 +3,9 @@ import { Space } from './../Shared/model';
 // Lambda to added data to sdk
 import { DynamoDB } from 'aws-sdk'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
-import { v4 } from 'uuid'
+
 import { validateAsSpaceEntry } from '../Shared/InputValidator';
+import { generateRandomId, getEventBody } from '../Shared/Utils';
 
 const TABLE_NAME = process.env.TABLE_NAME
 
@@ -16,8 +17,8 @@ export async function handler(event: APIGatewayProxyEvent, context: Context): Pr
     body: 'Hello from DynamoDB'
   }
   try {
-    const item: Space = typeof event.body === 'object' ? event.body : JSON.parse(event.body);
-    item.spaceId = v4()
+    const item: Space = getEventBody(event)
+    item.spaceId = generateRandomId()
     validateAsSpaceEntry(item)
     await dbClient.put({
       TableName: TABLE_NAME!,

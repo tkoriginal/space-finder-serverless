@@ -1,7 +1,6 @@
 // Lambda to added data to sdk
 import { DynamoDB } from 'aws-sdk'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
-import { v4 } from 'uuid'
 
 const TABLE_NAME = process.env.TABLE_NAME
 const PRIMARY_KEY = process.env.PRIMARY_KEY
