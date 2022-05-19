@@ -4,5 +4,5 @@ export const config = {
   APP_CLIENT_ID: '5ujrhr87c6f9tm3078l683leku',
   TEST_USER_NAME: 'tasknetus1',
   TEST_PASSWORD: 'Testtest11[[',
-  IDENTITY_POOL_ID: 'us-east-1:1e75b120-8787-41dd-bd4d-4391fbc6e044'
+  IDENTITY_POOL_ID: 'us-east-1:5ea1969d-530f-457f-bf10-583e23202a63'
 }
