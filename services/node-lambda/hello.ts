@@ -1,14 +1,27 @@
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { S3 } from 'aws-sdk'
 
 const s3Client = new S3()
 
-export async function handler(event: any, context: any) {
-  const buckets = await s3Client.listBuckets().promise()
-  console.log('Got an event:');
-  console.log(event);
+export async function handler(event: APIGatewayProxyEvent, context: any): Promise<APIGatewayProxyResult> {
+  if (isAuthorized(event)) {
+    return {
+      statusCode: 200,
+      body: 'You are authorized'
+    }
+  }
   return {
-    statusCode: 200,
-    body: 'Here are your buckets' + JSON.stringify(buckets)
+    statusCode: 401,
+    body: 'You are not authorized'
   }
 }
 
+function isAuthorized(event: APIGatewayProxyEvent) {
+  const groups: string = event.requestContext.authorizer?.claims['cognito:groups']
+  console.log({event})
+  console.log({groups})
+  if (groups) {
+    return (groups).includes('admin')
+  } 
+  return false
+}
