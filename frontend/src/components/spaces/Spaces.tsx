@@ -1,89 +1,71 @@
-import { Component } from "react";
+import { Component, FC, useEffect, useState } from "react";
 import { Space } from "../../model/Model";
 import { DataService } from "../../services/DataService";
-import { SpaceComponent } from "./SpaceComponent";
-import { ConfromModalComponent } from './ConfirmModalComponet';
+import SpaceComponent from "./SpaceComponent";
+import ConfirmModalComponent from "./ConfirmModalComponent";
 
 interface SpacesState {
-    spaces: Space[],
-    showModal: boolean,
-    modalContent: string
+  spaces: Space[];
+  showModal: boolean;
+  modalContent: string;
 }
 
 interface SpacesProps {
-    dataService: DataService
+  dataService: DataService;
 }
+const Spaces: FC<SpacesProps> = ({ dataService }) => {
+  const [spaces, setSpaces] = useState<Space[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<string>("");
 
-export class Spaces extends Component<SpacesProps, SpacesState> {
+  useEffect(() => {
+    const getSpace = async () => {
+      setSpaces(await dataService.getSpaces());
+    };
+    getSpace();
+  }, [dataService]);
 
-    constructor(props: SpacesProps) {
-        super(props)
-        this.state = {
-            spaces: [],
-            showModal: false,
-            modalContent: ''
-        }
-        this.reserveSpace = this.reserveSpace.bind(this);
-        this.closeModal = this.closeModal.bind(this)
-
+  const reserveSpace = async (spaceId: string) => {
+    const reservationResult = await dataService.reserveSpace(spaceId);
+    if (reservationResult) {
+      setShowModal(true);
+      setModalContent(
+        `You reserved the space with id ${spaceId} and got the reservation number ${reservationResult}`
+      );
+    } else {
+      setShowModal(true);
+      setModalContent(`You can't reserve the space with id ${spaceId}`);
     }
+  };
 
-    async componentDidMount() {
-        const spaces = await this.props.dataService.getSpaces();
-        this.setState({
-            spaces: spaces
-        });
-    }
+  const renderSpaces = () => {
+    return spaces.map((space) => (
+      <SpaceComponent
+        location={space.location}
+        name={space.name}
+        spaceId={space.spaceId}
+        reserveSpace={reserveSpace}
+      />
+    ));
+  };
 
-    private async reserveSpace(spaceId: string) {
-        const reservationResult = await this.props.dataService.reserveSpace(spaceId)
-        if (reservationResult) {
-            this.setState({
-                showModal: true,
-                modalContent: `You reserved the space with id ${spaceId} and got the reservation number ${reservationResult}`
-            })
-        } else {
-            this.setState({
-                showModal: true,
-                modalContent: `You can't reserve the space with id ${spaceId}`
-            })
-        }
-     }
+  const closeModal = () => {
+    setShowModal(false);
+    setModalContent("");
+  };
 
-    private renderSpaces() {
-        const rows: any[] = []
-        for (const space of this.state.spaces) {
-            rows.push(
-                <SpaceComponent
-                    location={space.location}
-                    name={space.name}
-                    spaceId={space.spaceId}
-                    reserveSpace={this.reserveSpace}
-                />
-            )
-        }
-        return rows;
-    }
+  return (
+    <div>
+      <h2>Welcome to the Spaces page!</h2>
+      {renderSpaces()}
+      <ConfirmModalComponent
+        close={closeModal}
+        content={modalContent}
+        show={showModal}
+      />
+    </div>
+  );
+  
+};
 
-    private closeModal() {
-        this.setState({
-            showModal: false,
-            modalContent: ''
-        })
-    }
-
-    render() {
-        return (
-            <div>
-                <h2>Welcome to the Spaces page!</h2>
-                {this.renderSpaces()}
-                <ConfromModalComponent
-                    close={this.closeModal}
-                    content={this.state.modalContent}
-                    show={this.state.showModal} />
-            </div>
-        )
-    }
-
-
-}
+export default Spaces;

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User  } from '../model/Model'
 import { AuthService } from '../services/AuthService'
-import { Login } from './Login';
+import Login from './Login';
 import { Router, Route, Switch } from 'react-router-dom'
 import history from '../utils/history';
-import { Navbar } from './Navbar';
+import Navbar from './Navbar';
 import  Home from './Home';
-import { Profile } from './Profile';
-import { Spaces } from './spaces/Spaces'
+import  Profile from './Profile';
+import Spaces from './spaces/Spaces'
 import { DataService } from '../services/DataService';
 
 const App = () => {

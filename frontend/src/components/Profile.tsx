@@ -1,67 +1,61 @@
-import React from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { User, UserAttribute } from "../model/Model";
 import { AuthService } from "../services/AuthService";
 
 interface ProfileState {
-    userAttributes: UserAttribute[]
+  userAttributes: UserAttribute[];
 }
 interface ProfileProps {
-    user: User | undefined
-    authService: AuthService
+  user: User | undefined;
+  authService: AuthService;
 }
 
-export class Profile extends React.Component<ProfileProps, ProfileState> {
+const Profile: FC<ProfileProps> = ({ user, authService }) => {
+  const [userAttributes, setUserAttributes] = useState<UserAttribute[]>([]);
 
-    state: ProfileState = {
-        userAttributes: []
+  useEffect(() => {
+    const getUserAttributes = async (user: User) => {
+      setUserAttributes(await authService.getUserAttributes(user));
+    };
+    if (user) {
+      getUserAttributes(user);
     }
+  }, []);
 
-    async componentDidMount(){
-        if (this.props.user) {
-            const userAtrs = await this.props.authService.getUserAttributes(this.props.user);
-            this.setState({
-                userAttributes: userAtrs
-            })
-        }
-    }
+  const renderUserAttributes = () => {
+    return (
+      <table>
+        <tbody>
+          {userAttributes.map((userAttribute) => (
+            <tr key={userAttribute.Name}>
+              <td>{userAttribute.Name}</td>
+              <td>{userAttribute.Value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
 
+  if (user) {
+      return (<div>
+          Welcome to the profile page
+          <div>
+          <h3>Hello {user.userName}</h3>
+          Here are your attributes:
+          {renderUserAttributes()}
+        </div>
+      </div>)
+  } else {
+      return <div>
+      Welcome ti the profile page!
+      <div>
+          Please <Link to="login">Login</Link>
+        </div>
+    </div>
+  }
 
-    private renderUserAttributes(){
-        const rows = []
-        for (const userAttribute of this.state.userAttributes) {
-            rows.push(<tr key={userAttribute.Name}>
-                <td>{userAttribute.Name}</td>
-                <td>{userAttribute.Value}</td>
-            </tr>)
-            
-        }
-        return <table>
-            <tbody>
-                {rows}
-            </tbody>
-        </table>
-    }
+};
 
-    render(){
-        let profileSpace
-        if (this.props.user) {
-            profileSpace = <div>
-                <h3>Hello {this.props.user.userName}</h3>
-                Here are your attributes:
-                {this.renderUserAttributes()}
-                </div>
-        } else {
-            profileSpace = <div>
-               Please <Link to='login'>Login</Link>
-            </div>
-        }
-
-        return(
-            <div>
-                Welcome ti the profile page!
-                {profileSpace}
-            </div>
-        )
-    }
-}
+export default Profile

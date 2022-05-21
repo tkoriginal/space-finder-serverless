@@ -65,3 +65,5 @@ const Login: FC<LoginProps> = ({ authService, setUser }) => {
       </div>
     );
 };
+
+export default Login
