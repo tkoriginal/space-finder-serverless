@@ -1,11 +1,12 @@
+import { photoPickerButton } from "aws-amplify";
 import { CfnOutput } from "aws-cdk-lib";
-import { RestApi } from "aws-cdk-lib/aws-apigateway";
 import { UserPool, UserPoolClient, CfnIdentityPool, CfnIdentityPoolRoleAttachment } from "aws-cdk-lib/aws-cognito";
 import { Effect, FederatedPrincipal, PolicyStatement, Role } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 export class IdentityPoolWrapper {
   private scope: Construct;
+  private photoBucketArn: string;
 
   private userPool: UserPool;
   private userPoolClient: UserPoolClient;
@@ -17,11 +18,13 @@ export class IdentityPoolWrapper {
   constructor(
     scope: Construct,
     userPool: UserPool,
-    userPoolClient: UserPoolClient
+    userPoolClient: UserPoolClient,
+    photoBucketArn: string
   ) {
     this.scope = scope;
     this.userPool = userPool;
     this.userPoolClient = userPoolClient;
+    this.photoBucketArn = photoBucketArn;
     this.initialize()
   }
 
@@ -87,9 +90,10 @@ export class IdentityPoolWrapper {
     this.adminRole.addToPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [
-        's3:ListAllMyBuckets'
+        's3:PutObject',
+        's3:PutObjectAcl' // allow files that have public access
       ],
-      resources: ['*']
+      resources: [this.photoBucketArn]
     }))
   }
 
