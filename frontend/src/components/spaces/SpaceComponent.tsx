@@ -6,7 +6,7 @@ interface SpaceComponentProps {
   spaceId: string;
   name: string;
   location: string;
-  photoUrl?: string;
+  photoURL?: string;
   reserveSpace: (spaceId: string) => void;
 }
 
@@ -14,12 +14,12 @@ const SpaceComponent: FC<SpaceComponentProps> = ({
   spaceId,
   name,
   location,
-  photoUrl,
+  photoURL,
   reserveSpace,
 }) => {
   const renderImage = () => {
-    if (photoUrl) {
-      return <img src={photoUrl} alt="" />;
+    if (photoURL) {
+      return <img src={photoURL} alt="" />;
     } else {
       return <img src={genericImage} alt="" />;
     }

@@ -1,4 +1,4 @@
-import React, { FC, SyntheticEvent, useState } from "react";
+import { FC, SyntheticEvent, useState } from "react";
 import { User } from "../model/Model";
 import { AuthService } from "../services/AuthService";
 import history from "../utils/history";
@@ -7,16 +7,16 @@ interface LoginProps {
   authService: AuthService;
   setUser: (user: User) => void;
 }
-interface LoginState {
-  userName: string;
-  password: string;
-  loginAttenpted: boolean;
-  loginSuccesfull: boolean;
-}
+// interface LoginState {
+//   userName: string;
+//   password: string;
+//   loginAttenpted: boolean;
+//   loginSuccesfull: boolean;
+// }
 
-interface CustomEvent {
-  target: HTMLInputElement;
-}
+// interface CustomEvent {
+//   target: HTMLInputElement;
+// }
 const Login: FC<LoginProps> = ({ authService, setUser }) => {
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");

@@ -3,6 +3,7 @@ import { Space } from "../../model/Model";
 import { DataService } from "../../services/DataService";
 import SpaceComponent from "./SpaceComponent";
 import ConfirmModalComponent from "./ConfirmModalComponent";
+import { Link } from "react-router-dom";
 
 interface SpacesState {
   spaces: Space[];
@@ -45,6 +46,7 @@ const Spaces: FC<SpacesProps> = ({ dataService }) => {
         name={space.name}
         spaceId={space.spaceId}
         reserveSpace={reserveSpace}
+        photoURL={space.photoUrl}
       />
     ));
   };
@@ -57,6 +59,7 @@ const Spaces: FC<SpacesProps> = ({ dataService }) => {
   return (
     <div>
       <h2>Welcome to the Spaces page!</h2>
+      <Link to='/create-space'>Create a Space</Link><br />
       {renderSpaces()}
       <ConfirmModalComponent
         close={closeModal}

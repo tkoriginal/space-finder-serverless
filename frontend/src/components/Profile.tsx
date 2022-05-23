@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { User, UserAttribute } from "../model/Model";
 import { AuthService } from "../services/AuthService";
 
-interface ProfileState {
-  userAttributes: UserAttribute[];
-}
+// interface ProfileState {
+//   userAttributes: UserAttribute[];
+// }
 interface ProfileProps {
   user: User | undefined;
   authService: AuthService;
@@ -21,7 +21,7 @@ const Profile: FC<ProfileProps> = ({ user, authService }) => {
     if (user) {
       getUserAttributes(user);
     }
-  }, []);
+  }, [authService, user]);
 
   const renderUserAttributes = () => {
     return (
